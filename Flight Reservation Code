@@ -1,0 +1,224 @@
+import java.util.Scanner;
+
+class Passenger {
+    String name;
+    int flightClass; // 1 = First, 2 = Business, 3 = Economy
+    int boardingGroup;
+
+    public Passenger(String name, int flightClass, int boardingGroup) {
+        this.name = name;
+        this.flightClass = flightClass;
+        this.boardingGroup = boardingGroup;
+    }
+
+    public String getClassString() {
+        switch (flightClass) {
+            case 1:
+                return "First";
+            case 2:
+                return "Business";
+            case 3:
+                return "Economy";
+            default:
+                return "Unknown";
+        }
+    }
+
+    @Override
+    public String toString() {
+        return name + " (Class: " + getClassString() + ", Group: " + boardingGroup + ")";
+    }
+}
+
+class Node {
+    Passenger passenger;
+    Node next;
+    Node prev;
+
+    public Node(Passenger passenger) {
+        this.passenger = passenger;
+    }
+}
+
+class FlightReservationSystem {
+    private Node head;
+
+    // Add a passenger to the sorted doubly linked list
+    public void addPassenger(String name, int flightClass, int boardingGroup) {
+        Passenger passenger = new Passenger(name, flightClass, boardingGroup);
+        Node newNode = new Node(passenger);
+
+        if (head == null) {
+            head = newNode;
+            return;
+        }
+
+        Node current = head;
+
+        while (current != null) {
+            if (comparePassengers(newNode.passenger, current.passenger) < 0) {
+                // Insert before current node
+                newNode.next = current;
+                newNode.prev = current.prev;
+                if (current.prev != null) {
+                    current.prev.next = newNode;
+                } else {
+                    head = newNode;
+                }
+                current.prev = newNode;
+                return;
+            }
+            if (current.next == null) break;
+            current = current.next;
+        }
+
+        // Insert at the end
+        current.next = newNode;
+        newNode.prev = current;
+    }
+
+    // Compare passengers by class and boarding group
+    private int comparePassengers(Passenger p1, Passenger p2) {
+        if (p1.flightClass != p2.flightClass) {
+            return Integer.compare(p1.flightClass, p2.flightClass);
+        }
+        return Integer.compare(p1.boardingGroup, p2.boardingGroup);
+    }
+
+    // Remove a passenger by name
+    public void removePassenger(String name) {
+        Node current = head;
+
+        while (current != null) {
+            if (current.passenger.name.equals(name)) {
+                if (current.prev != null) {
+                    current.prev.next = current.next;
+                } else {
+                    head = current.next;
+                }
+                if (current.next != null) {
+                    current.next.prev = current.prev;
+                }
+                System.out.println("Passenger " + name + " has been removed.");
+                return;
+            }
+            current = current.next;
+        }
+
+        System.out.println("Passenger " + name + " not found.");
+    }
+
+    // Display passengers in ascending order
+    public void displayPassengers() {
+        Node current = head;
+
+        if (current == null) {
+            System.out.println("No passengers in the list.");
+            return;
+        }
+
+        System.out.println("Passengers in Ascending Order:");
+        while (current != null) {
+            System.out.println(current.passenger);
+            current = current.next;
+        }
+    }
+
+    // Display passengers in descending order
+    public void displayPassengersReverse() {
+        Node current = head;
+
+        if (current == null) {
+            System.out.println("No passengers in the list.");
+            return;
+        }
+
+        while (current.next != null) {
+            current = current.next;
+        }
+
+        System.out.println("Passengers in Descending Order:");
+        while (current != null) {
+            System.out.println(current.passenger);
+            current = current.prev;
+        }
+    }
+}
+
+public class FlightReservationTest2 {
+    public static void main(String[] args) {
+        FlightReservationSystem system = new FlightReservationSystem();
+        Scanner scanner = new Scanner(System.in);
+
+        // Predefined passengers
+        system.addPassenger("Alice", 1, 1); // First class, group 1
+        system.addPassenger("Bob", 2, 2);   // Business class, group 2
+        system.addPassenger("Charlie", 3, 3); // Economy class, group 3
+        system.addPassenger("Diana", 1, 2); // First class, group 2
+        system.addPassenger("Ethan", 3, 1); // Economy class, group 1
+        system.addPassenger("Fiona", 2, 1); // Business class, group 1
+
+        while (true) {
+            System.out.println("\nFlight Reservation System");
+            System.out.println("1. Add Passenger");
+            System.out.println("2. Remove Passenger");
+            System.out.println("3. Display Passengers (Ascending)");
+            System.out.println("4. Display Passengers (Descending)");
+            System.out.println("5. Exit");
+
+            System.out.print("Choose an option: ");
+            int option = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (option) {
+                case 1:
+                    System.out.print("Enter Passenger Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter Flight Class (1 = First, 2 = Business, 3 = Economy): ");
+                    int flightClass = scanner.nextInt();
+                    System.out.print("Enter Boarding Group: ");
+                    int boardingGroup = scanner.nextInt();
+                    system.addPassenger(name, flightClass, boardingGroup);
+                    break;
+
+                case 2:
+                    System.out.print("Enter Passenger Name to Remove: ");
+                    String removeName = scanner.nextLine();
+                    system.removePassenger(removeName);
+                    break;
+
+                case 3:
+                    system.displayPassengers();
+                    break;
+
+                case 4:
+                    system.displayPassengersReverse();
+                    break;
+
+                case 5:
+                    System.out.println("Exiting...");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+}
+
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
