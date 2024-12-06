@@ -1,0 +1,390 @@
+package AirlineApp;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+
+public class FlightReservationApp {
+    private JFrame frame;
+    private FlightReservationSystem system;
+
+    public FlightReservationApp() {
+        system = new FlightReservationSystem(); // Initialize backend system
+
+        // Predefined passengers
+        system.addPassenger("Alice", 1, 1); // First class, group 1
+        system.addPassenger("Bob", 2, 2);   // Business class, group 2
+        system.addPassenger("Charlie", 3, 3); // Economy class, group 3
+        system.addPassenger("Diana", 1, 2); // First class, group 2
+        system.addPassenger("Ethan", 3, 1); // Economy class, group 1
+        system.addPassenger("Fiona", 2, 1); // Business class, group 1
+        system.addPassenger("George", 1, 3); // First class, group 3
+        system.addPassenger("Hannah", 3, 2); // Economy class, group 2
+        system.addPassenger("Ivy", 2, 3);   // Business class, group 3
+        system.addPassenger("Jack", 1, 1);  // First class, group 1
+        system.addPassenger("Karen", 2, 4); // Business class, group 4
+        system.addPassenger("Leo", 3, 5);   // Economy class, group 5
+        system.addPassenger("Mia", 1, 1);   // First class, group 1
+        system.addPassenger("Nina", 2, 2);  // Business class, group 2
+        system.addPassenger("Oliver", 3, 3); // Economy class, group 3
+        system.addPassenger("Paul", 1, 4);  // First class, group 4
+        system.addPassenger("Quinn", 2, 5); // Business class, group 5
+        system.addPassenger("Rita", 3, 1);  // Economy class, group 1
+        system.addPassenger("Sam", 1, 2);   // First class, group 2
+        system.addPassenger("Tina", 2, 3);  // Business class, group 3
+        system.addPassenger("Uma", 3, 4);   // Economy class, group 4
+        system.addPassenger("Victor", 1, 5); // First class, group 5
+        system.addPassenger("Wendy", 2, 1); // Business class, group 1
+        system.addPassenger("Xander", 3, 2); // Economy class, group 2
+        system.addPassenger("Yara", 1, 3);  // First class, group 3
+        system.addPassenger("Zoe", 2, 4);   // Business class, group 4
+        frame = new JFrame("Flight Reservation System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(800, 600);
+
+        showMainPanel(); // Display the initial panel
+    }
+
+
+    private void showMainPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel welcomeLabel = new JLabel("Welcome to Flight Reservations");
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        welcomeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel promptLabel = new JLabel("Are you Admin or a Guest?");
+        promptLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        promptLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton adminButton = new JButton("Admin");
+        JButton guestButton = new JButton("Guest");
+
+        adminButton.setPreferredSize(new Dimension(120, 30));
+        guestButton.setPreferredSize(new Dimension(120, 30));
+
+        adminButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        guestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        adminButton.addActionListener(e -> showAdminLoginPanel());
+        guestButton.addActionListener(e -> showGuestPanel());
+
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(welcomeLabel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(promptLabel);
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(adminButton);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(guestButton);
+
+        frame.setContentPane(panel);
+        frame.setVisible(true);
+    }
+
+    private void showAdminLoginPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel passwordLabel = new JLabel("Enter Admin Password:");
+        passwordLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        passwordLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPasswordField passwordField = new JPasswordField();
+        passwordField.setMaximumSize(new Dimension(200, 30));
+        passwordField.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton loginButton = new JButton("Login");
+        loginButton.setPreferredSize(new Dimension(100, 30));
+        loginButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(100, 30));
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        loginButton.addActionListener(e -> {
+            String password = new String(passwordField.getPassword());
+            if (password.equals("1234")) {
+                showAdminPanel();
+            } else {
+                JOptionPane.showMessageDialog(frame, "Incorrect password. Try again.");
+            }
+        });
+
+        backButton.addActionListener(e -> showMainPanel());
+
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(passwordLabel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(passwordField);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(loginButton);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(backButton);
+
+        frame.setContentPane(panel);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    private void showAdminPanel() {
+        // Main Panel with Padding
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20)); // Add padding around the edges
+
+        // Header
+        JLabel headerLabel = new JLabel("Admin Panel");
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        headerLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Passenger List Section
+        JPanel passengerListPanel = new JPanel(new BorderLayout(10, 10));
+        JLabel listLabel = new JLabel("Passengers:");
+        listLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JList<String> passengerList = new JList<>();
+        passengerList.setCellRenderer(new ListCellRenderer<>() {
+            private final JLabel label = new JLabel();
+
+            @Override
+            public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
+                label.setText(value);
+                label.setOpaque(true);
+
+                // Alternating colors
+                Color lighterGray = new Color(240, 240, 240);
+                label.setBackground(index % 2 == 0 ? Color.WHITE : lighterGray);
+                label.setForeground(Color.BLACK);
+
+                // Highlight selected item
+                if (isSelected) {
+                    label.setBackground(Color.BLUE);
+                    label.setForeground(Color.WHITE);
+                }
+
+                return label;
+            }
+        });
+
+        JScrollPane scrollPane = new JScrollPane(passengerList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(150, 400)); // Skinnier list-box
+
+        JComboBox<String> filterDropdown = new JComboBox<>(new String[]{"Ascending", "Descending", "First Class", "Business Class", "Economy Class", "Boarding Group"});
+        filterDropdown.setPreferredSize(new Dimension(140, 30)); // Compact dropdown
+
+        passengerListPanel.add(listLabel, BorderLayout.NORTH);
+        passengerListPanel.add(scrollPane, BorderLayout.CENTER);
+        passengerListPanel.add(filterDropdown, BorderLayout.SOUTH);
+
+        // Add Passenger Section
+        JPanel addPassengerPanel = new JPanel();
+        addPassengerPanel.setLayout(new GridLayout(4, 2, 10, 10));
+
+        JLabel nameLabel = new JLabel("Name:");
+        JTextField nameField = new JTextField();
+        JLabel classLabel = new JLabel("Flight Class:");
+        JComboBox<String> classDropdown = new JComboBox<>(new String[]{"First", "Business", "Economy"});
+        JLabel groupLabel = new JLabel("Boarding Group:");
+        JComboBox<Integer> groupDropdown = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
+        JButton addButton = new JButton("Add Passenger");
+
+        addPassengerPanel.add(nameLabel);
+        addPassengerPanel.add(nameField);
+        addPassengerPanel.add(classLabel);
+        addPassengerPanel.add(classDropdown);
+        addPassengerPanel.add(groupLabel);
+        addPassengerPanel.add(groupDropdown);
+        addPassengerPanel.add(new JLabel()); // Spacer
+        addPassengerPanel.add(addButton);
+
+        // Passenger Detail Section
+        JPanel detailPanel = new JPanel(new BorderLayout(10, 10));
+        JLabel detailLabel = new JLabel("Passenger Details:");
+        detailLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JTextArea detailArea = new JTextArea();
+        detailArea.setEditable(false);
+        detailArea.setLineWrap(true);
+        detailArea.setWrapStyleWord(true);
+        JScrollPane detailScrollPane = new JScrollPane(detailArea);
+        detailScrollPane.setPreferredSize(new Dimension(400, 100)); // Wide but not tall
+
+        // Buttons Panel: Remove and Back Buttons
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10)); // Center buttons with spacing
+        JButton removeButton = new JButton("Remove Passenger");
+        JButton backButton = new JButton("Back");
+        buttonsPanel.add(removeButton);
+        buttonsPanel.add(backButton);
+
+        detailPanel.add(detailLabel, BorderLayout.NORTH);
+        detailPanel.add(detailScrollPane, BorderLayout.CENTER);
+        detailPanel.add(buttonsPanel, BorderLayout.SOUTH);
+
+        // Layout
+        JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
+        centerPanel.add(passengerListPanel, BorderLayout.WEST);
+        centerPanel.add(addPassengerPanel, BorderLayout.EAST);
+
+        panel.add(headerLabel, BorderLayout.NORTH);
+        panel.add(centerPanel, BorderLayout.CENTER);
+        panel.add(detailPanel, BorderLayout.SOUTH);
+
+        // Actions
+        addButton.addActionListener(e -> {
+            String name = nameField.getText();
+            int flightClass = classDropdown.getSelectedIndex() + 1;
+            int boardingGroup = (Integer) groupDropdown.getSelectedItem();
+
+            if (name == null || name.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(frame, "Name cannot be empty.");
+                return;
+            }
+
+            system.addPassenger(name, flightClass, boardingGroup);
+            JOptionPane.showMessageDialog(frame, "Passenger added successfully!");
+            updatePassengerList(passengerList, "Ascending");
+        });
+
+        filterDropdown.addActionListener(e -> {
+            String selectedFilter = (String) filterDropdown.getSelectedItem();
+            updatePassengerList(passengerList, selectedFilter);
+        });
+
+        removeButton.addActionListener(e -> {
+            String selectedPassenger = passengerList.getSelectedValue();
+            if (selectedPassenger != null) {
+                system.removePassenger(selectedPassenger.trim());
+                JOptionPane.showMessageDialog(frame, "Passenger removed successfully!");
+                updatePassengerList(passengerList, "Ascending");
+                detailArea.setText(""); // Clear passenger details
+            } else {
+                JOptionPane.showMessageDialog(frame, "Please select a passenger to remove.");
+            }
+        });
+
+        passengerList.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                String selectedPassenger = passengerList.getSelectedValue();
+                if (selectedPassenger != null) {
+                    Passenger passenger = system.searchPassengerByName(selectedPassenger.trim());
+                    if (passenger != null) {
+                        detailArea.setText("Name: " + passenger.name + "\n" +
+                                "Class: " + passenger.getClassString() + "\n" +
+                                "Boarding Group: " + passenger.boardingGroup);
+                    }
+                }
+            }
+        });
+
+        backButton.addActionListener(e -> showMainPanel());
+
+        // Populate the list with predefined passengers
+        updatePassengerList(passengerList, "Ascending");
+
+        // Set content pane
+        frame.setContentPane(panel);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    private void updatePassengerList(JList<String> passengerList, String filter) {
+        List<Passenger> passengers = system.getPassengersByFilter(filter);
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        for (Passenger passenger : passengers) {
+            listModel.addElement(passenger.name);
+        }
+        passengerList.setModel(listModel);
+    }
+
+
+
+
+    private void showGuestPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+        JLabel headerLabel = new JLabel("Thank you for reserving with us");
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        headerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel nameLabel = new JLabel("Please enter your preferred name:");
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JTextField nameField = new JTextField();
+        nameField.setMaximumSize(new Dimension(200, 30));
+
+        JLabel classLabel = new JLabel("Please select your preferred flight class:");
+        classLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        classLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JComboBox<String> classDropdown = new JComboBox<>(new String[]{"First", "Business", "Economy"});
+        classDropdown.setMaximumSize(new Dimension(200, 30));
+
+        JLabel groupLabel = new JLabel("Please select your preferred boarding group:");
+        groupLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        groupLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JComboBox<Integer> groupDropdown = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
+        groupDropdown.setMaximumSize(new Dimension(200, 30));
+
+        JButton reserveButton = new JButton("Reserve Ticket");
+        reserveButton.setPreferredSize(new Dimension(150, 30));
+        reserveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JButton backButton = new JButton("Back");
+        backButton.setPreferredSize(new Dimension(150, 30));
+        backButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        reserveButton.addActionListener(e -> {
+            try {
+                String name = nameField.getText();
+                if (name == null || name.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(frame, "Name cannot be empty.");
+                    return;
+                }
+
+                int flightClass = classDropdown.getSelectedIndex() + 1;
+                Integer boardingGroup = (Integer) groupDropdown.getSelectedItem();
+
+                if (boardingGroup == null) {
+                    JOptionPane.showMessageDialog(frame, "Boarding group is required.");
+                    return;
+                }
+
+                system.addPassenger(name, flightClass, boardingGroup);
+                JOptionPane.showMessageDialog(frame, "Congrats! You've reserved a ticket.\n" +
+                        "Name: " + name + "\n" +
+                        "Class: " + classDropdown.getSelectedItem() + "\n" +
+                        "Boarding Group: " + boardingGroup);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(frame, "Invalid input. Please ensure all fields are properly filled.");
+            }
+        });
+
+
+        backButton.addActionListener(e -> showMainPanel());
+
+        panel.add(Box.createVerticalStrut(20));
+        panel.add(headerLabel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(nameLabel);
+        panel.add(nameField);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(classLabel);
+        panel.add(classDropdown);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(groupLabel);
+        panel.add(groupDropdown);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(reserveButton);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(backButton);
+
+        frame.setContentPane(panel);
+        frame.revalidate();
+        frame.repaint();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(FlightReservationApp::new);
+    }
+}
