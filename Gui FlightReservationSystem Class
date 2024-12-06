@@ -1,0 +1,103 @@
+package AirlineApp;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class FlightReservationSystem {
+    private Node head;
+
+    // Adds a passenger to the list, maintaining sorted order
+    public void addPassenger(String name, int flightClass, int boardingGroup) {
+        Passenger passenger = new Passenger(name, flightClass, boardingGroup);
+        Node newNode = new Node(passenger);
+        if (head == null) {
+            head = newNode;
+            return;
+        }
+        Node current = head;
+        while (current != null) {
+            if (comparePassengers(newNode.passenger, current.passenger) < 0) {
+                newNode.next = current;
+                newNode.prev = current.prev;
+                if (current.prev != null) current.prev.next = newNode;
+                else head = newNode;
+                current.prev = newNode;
+                return;
+            }
+            if (current.next == null) break;
+            current = current.next;
+        }
+        current.next = newNode;
+        newNode.prev = current;
+    }
+
+    // Compares passengers by flight class and boarding group
+    private int comparePassengers(Passenger p1, Passenger p2) {
+        if (p1.flightClass != p2.flightClass) return Integer.compare(p1.flightClass, p2.flightClass);
+        return Integer.compare(p1.boardingGroup, p2.boardingGroup);
+    }
+
+    // Removes a passenger by name
+    public void removePassenger(String name) {
+        Node current = head;
+        while (current != null) {
+            if (current.passenger.name.equalsIgnoreCase(name)) {
+                if (current.prev != null) current.prev.next = current.next;
+                else head = current.next;
+                if (current.next != null) current.next.prev = current.prev;
+                return;
+            }
+            current = current.next;
+        }
+    }
+
+    // Searches for a passenger by name and returns the Passenger object
+    public Passenger searchPassengerByName(String name) {
+        Node current = head;
+        while (current != null) {
+            if (current.passenger.name.equalsIgnoreCase(name)) {
+                return current.passenger;
+            }
+            current = current.next;
+        }
+        return null;
+    }
+
+    // Retrieves passengers based on a given filter
+    public List<Passenger> getPassengersByFilter(String filter) {
+        List<Passenger> passengers = new ArrayList<>();
+        Node current = head;
+
+        while (current != null) {
+            passengers.add(current.passenger);
+            current = current.next;
+        }
+
+        switch (filter) {
+            case "Ascending":
+                passengers.sort(Comparator.comparing(p -> p.name.toLowerCase()));
+                break;
+            case "Descending":
+                passengers.sort((p1, p2) -> p2.name.toLowerCase().compareTo(p1.name.toLowerCase()));
+                break;
+            case "First Class":
+                passengers = passengers.stream().filter(p -> p.flightClass == 1).toList();
+                break;
+            case "Business Class":
+                passengers = passengers.stream().filter(p -> p.flightClass == 2).toList();
+                break;
+            case "Economy Class":
+                passengers = passengers.stream().filter(p -> p.flightClass == 3).toList();
+                break;
+            case "Boarding Group":
+                passengers.sort(Comparator.comparingInt(p -> p.boardingGroup));
+                break;
+            default:
+                break;
+        }
+
+        return passengers;
+    }
+
+}
