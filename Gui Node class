@@ -1,0 +1,11 @@
+package AirlineApp;
+
+public class Node {
+    Passenger passenger;
+    Node next;
+    Node prev;
+
+    public Node(Passenger passenger) {
+        this.passenger = passenger;
+    }
+}
